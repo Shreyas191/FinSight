@@ -1,0 +1,150 @@
+# =====================================
+# 🌐 FULL-STACK PROJECT: FASTAPI + REACT
+# =====================================
+
+# ───────────────────────────────
+# 🐍 PYTHON / FASTAPI BACKEND
+# ───────────────────────────────
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+ENV/
+env.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+
+# Database files (if using SQLite locally)
+*.sqlite3
+
+# Environment variable files
+.env
+.env.*
+*.env
+
+# Logs
+*.log
+logs/
+log.txt
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+bandit.json
+
+# IDE / Editor settings
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# ───────────────────────────────
+# ⚛️ REACT FRONTEND
+# ───────────────────────────────
+
+# dependencies
+frontend/node_modules/
+
+# production build
+frontend/build/
+frontend/dist/
+
+# environment files
+frontend/.env
+frontend/.env.*
+*.env
+
+# misc
+frontend/.DS_Store
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# coverage
+frontend/coverage/
+
+# lock files (optional if auto-generated)
+frontend/package-lock.json
+frontend/yarn.lock
+
+# ───────────────────────────────
+# 🐳 DOCKER / DEPLOYMENT FILES
+# ───────────────────────────────
+
+# Docker specific
+*.pid
+docker-compose.override.yml
+# Uncomment to ignore volumes or local data mounts
+# /data/
+# /volumes/
+
+# Deployment / Build artifacts
+*.bak
+*.tmp
+*.swp
+*.log
+*.pid
+*.tar
+*.zip
+
+# If you build frontend inside backend container
+/backend/app/static/js/
+/backend/app/static/css/
+
+# ───────────────────────────────
+# 🧰 SYSTEM / OS FILES
+# ───────────────────────────────
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ───────────────────────────────
+# 🧠 OPTIONAL TOOLING
+# ───────────────────────────────
+
+# Jupyter notebooks
+.ipynb_checkpoints
+
+# VSCode local history
+.history/
+.vscode/

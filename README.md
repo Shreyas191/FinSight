@@ -537,63 +537,6 @@ finsight/
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow PEP 8 for Python code
-- Use ESLint/Prettier for JavaScript
-- Write tests for new features
-- Update documentation
-
----
-
-## 🐛 Troubleshooting
-
-### Backend Issues
-
-**Problem:** "Gemini API quota exceeded"
-```bash
-# Solution: Wait 1-5 minutes or generate new API key
-# Check usage: https://ai.google.dev/gemini-api/docs/rate-limits
-```
-
-**Problem:** "Out of memory"
-```bash
-# Solution: Reduce model sizes or use Gemini API for embeddings
-# Edit config.py: EMBEDDING_MODEL = "gemini"  # Use Gemini for embeddings
-```
-
-**Problem:** "ChromaDB deprecated configuration"
-```bash
-# Already fixed in latest version
-# Use: chromadb.PersistentClient(path="chroma_db")
-```
-
-### Frontend Issues
-
-**Problem:** "CORS error"
-```bash
-# Solution: Check backend CORS settings in main.py
-# Ensure frontend URL is in allow_origins
-```
-
-**Problem:** "API connection refused"
-```bash
-# Solution: Verify backend is running on correct port
-# Check REACT_APP_API_URL in .env
-```
-
----
-
 ## 📊 Performance
 
 - **Upload Processing:** 10-30 seconds for 50-page document
@@ -644,28 +587,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Discussions:** [GitHub Discussions](https://github.com/yourusername/finsight/discussions)
 - **Email:** your.email@example.com
 
----
-
-## 🗺️ Roadmap
-
-- [ ] Multi-language support
-- [ ] Real-time collaboration
-- [ ] Advanced visualizations (charts, graphs)
-- [ ] Comparison mode (multiple documents)
-- [ ] Export to Excel/CSV
-- [ ] Mobile app
-- [ ] API authentication & rate limiting
-- [ ] Custom fine-tuned models
-- [ ] Integration with financial data APIs
-
----
 
 <div align="center">
 
-**Made with ❤️ by [Your Name]**
-
-⭐ Star this repo if you find it helpful!
-
-[Report Bug](https://github.com/yourusername/finsight/issues) · [Request Feature](https://github.com/yourusername/finsight/issues)
+**Made with ❤️ by Shreyas Kaldate**
 
 </div>

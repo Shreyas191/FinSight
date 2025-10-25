@@ -9,6 +9,31 @@ from app.api.dependencies import ModelDependencies
 class LLMService:
     """Handle LLM operations using Gemini"""
     
+    def _extract_text_from_response(self, response) -> str:
+        """Safely extract text from Gemini response with multiple fallbacks"""
+        try:
+            # Try simple text accessor first
+            return response.text
+        except:
+            try:
+                # Try accessing candidates
+                if hasattr(response, 'candidates') and response.candidates:
+                    candidate = response.candidates[0]
+                    if hasattr(candidate, 'content') and candidate.content:
+                        if hasattr(candidate.content, 'parts') and candidate.content.parts:
+                            # Extract text from all parts
+                            text_parts = []
+                            for part in candidate.content.parts:
+                                if hasattr(part, 'text'):
+                                    text_parts.append(part.text)
+                            if text_parts:
+                                return ''.join(text_parts)
+            except Exception as e:
+                print(f"Error extracting text from response: {e}")
+            
+            # Last resort fallback
+            return "Unable to generate response. Please try again."
+    
     def generate_answer(
         self, 
         question: str, 
@@ -50,7 +75,8 @@ ANSWER (based only on the context above):"""
                 )
             )
             
-            answer = response.text.strip()
+            # Safely extract answer
+            answer = self._extract_text_from_response(response).strip()
             
             # Detect hallucination indicators
             hallucination_indicators = [
@@ -94,7 +120,7 @@ Summary:"""
                     max_output_tokens=200,
                 )
             )
-            return response.text.strip()
+            return self._extract_text_from_response(response).strip()
         except Exception as e:
             print(f"Gemini API error: {str(e)}")
             return "Summary generation failed"

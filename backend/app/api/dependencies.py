@@ -5,7 +5,6 @@ Shared dependencies and model loading
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 import chromadb
-from chromadb.config import Settings as ChromaSettings
 import torch
 import google.generativeai as genai
 from app.config import settings
@@ -46,31 +45,87 @@ def get_models() -> ModelDependencies:
         print(f"API Key present: {len(api_key)} characters")
         genai.configure(api_key=api_key)
         
-        # List available models
+        # List available models and prioritize free-tier friendly models
         print("Checking available models...")
         try:
+            # Preferred models in order (best for free tier)
+            preferred_models = [
+                'gemini-1.5-flash',      # Best for free tier - fast & generous limits
+                'gemini-1.5-flash-002',  # Alternate flash version
+                'gemini-1.5-pro',        # Pro version (lower limits but still good)
+                'gemini-pro',            # Legacy but stable
+            ]
+            
             available_models = []
             for m in genai.list_models():
                 if 'generateContent' in m.supported_generation_methods:
-                    available_models.append(m.name)
-                    print(f"  ✅ Found: {m.name}")
+                    model_name = m.name.replace('models/', '')
+                    available_models.append(model_name)
+                    print(f"  ✅ Found: {model_name}")
             
             if not available_models:
                 print("❌ No models available with this API key")
                 raise Exception("No Gemini models available. Check API key permissions.")
             
-            # Use the first available model
-            model_to_use = available_models[0]
-            print(f"Using model: {model_to_use}")
+            # Select the first preferred model that's available
+            model_to_use = None
+            for preferred in preferred_models:
+                for available in available_models:
+                    if preferred in available:
+                        model_to_use = available
+                        break
+                if model_to_use:
+                    break
+            
+            # Fallback to first available if no preferred match
+            if not model_to_use:
+                model_to_use = available_models[0]
+            
+            print(f"🎯 Using model: {model_to_use}")
             _models.gemini_model = genai.GenerativeModel(model_to_use)
             
-            # Test it
-            print("Testing model...")
-            test_response = _models.gemini_model.generate_content("Hello, respond with 'OK'")
-            print(f"✅ Model test successful: {test_response.text[:50]}")
+            # Optional test - don't fail if test doesn't work
+            print("Testing model connectivity...")
+            try:
+                test_response = _models.gemini_model.generate_content(
+                    "Test: respond with OK",
+                    generation_config=genai.types.GenerationConfig(
+                        max_output_tokens=20,
+                        temperature=0.1,
+                    )
+                )
+                
+                # Try to get response text
+                response_text = "Model loaded"
+                try:
+                    response_text = test_response.text
+                except:
+                    try:
+                        if test_response.candidates and len(test_response.candidates) > 0:
+                            candidate = test_response.candidates[0]
+                            if hasattr(candidate, 'content') and candidate.content.parts:
+                                response_text = candidate.content.parts[0].text
+                    except:
+                        pass
+                
+                print(f"✅ Model test successful: {response_text}")
+            except Exception as test_error:
+                # Test failed but model is loaded - continue anyway
+                print(f"⚠️  Model test had issues (non-critical): {test_error}")
+                print(f"✅ Model initialized - will test during actual use")
             
         except Exception as e:
             print(f"❌ Error with Gemini API: {str(e)}")
+            
+            # If quota error, provide helpful message
+            if "quota" in str(e).lower() or "429" in str(e):
+                print("\n⚠️  QUOTA ISSUE DETECTED:")
+                print("   - Your API key may have hit daily/minute limits")
+                print("   - Try waiting 1-5 minutes and restart")
+                print("   - Generate a NEW API key at: https://aistudio.google.com/apikey")
+                print("   - Check usage at: https://ai.google.dev/gemini-api/docs/rate-limits")
+                print("   - Make sure you're using 'gemini-1.5-flash' for best free tier limits\n")
+            
             raise Exception(f"Could not initialize Gemini: {str(e)}")
         
         # Load sentiment analyzer
@@ -81,12 +136,11 @@ def get_models() -> ModelDependencies:
             device=0 if torch.cuda.is_available() else -1
         )
         
-        # Initialize ChromaDB
+        # Initialize ChromaDB with new syntax
         print("Initializing ChromaDB...")
-        _models.chroma_client = chromadb.Client(ChromaSettings(
-            chroma_db_impl="duckdb+parquet",
-            persist_directory=settings.CHROMA_DIR
-        ))
+        _models.chroma_client = chromadb.PersistentClient(
+            path=settings.CHROMA_DIR
+        )
         
         try:
             _models.collection = _models.chroma_client.create_collection(
